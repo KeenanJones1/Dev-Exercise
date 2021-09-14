@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Quotes App</title>
+  <script src="src/vue.js"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- <Filter /> -->
+    {{ placeholder }}
+    <Quotes :quotes="list" :btn="btn" :loading='loading'/>
+    <!-- <Pagination /> -->
+  </div>
+
+  <script src="src/app.js"></script>
+</body>
+</html>
