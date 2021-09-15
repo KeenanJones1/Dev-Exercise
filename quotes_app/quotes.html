@@ -7,10 +7,24 @@
 </head>
 <body>
   <div id="app">
-    <!-- <Filter /> -->
+    <div class="search">
+      <Search :seek="seek" :submit="onSubmit"/>
+    </div>
+
     {{ placeholder }}
-    <Quotes :quotes="list" :btn="btn" :loading='loading'/>
-    <!-- <Pagination /> -->
+
+    <div class="filter">
+      <Sorting :themes='themes' :filter='filter'/>
+    </div>
+
+    <div class="quote-table">
+      <Quotes :quotes="quotes" :loading='loading' :current='currentQuotes'/>
+    </div>
+
+    <div class="pagination">
+      <Pagination :pages='pages' :paginate='paginate' :current='currentPage'/>
+    </div>
+
   </div>
 
   <script src="src/app.js"></script>
