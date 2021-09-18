@@ -29,6 +29,10 @@
       <Pagination :pages='pages' :paginate='paginate' :current='currentPage'/>
     </div>
 
+    <div id="modal">
+      <Modal :quote="modalQuote" :open="modalOpen" :close="closeModal"/>
+    </div>
+
   </div>
 
   <script src="src/app.js"></script>

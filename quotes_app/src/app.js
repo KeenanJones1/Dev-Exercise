@@ -1,4 +1,26 @@
 
+const Modal = {
+  props: ['open', 'quote', 'close'],
+  template: `
+    <div v-if="open" class="overlay">
+      <div class="exit-btn">
+        <button @click="close">X</button>
+      </div>
+      <div class="quote-details">
+        <div class="quote-info">
+          <h3>Theme:<span>{{quote.theme}}</span></h3>
+          <h3>Title:<span>{{quote.context}}</span></h3>
+          <h3>Source:<span>{{quote.source}}</span></h3>
+        </div>
+        <div class="quote-text">
+          <h6>Quote:</h6>
+          <p>{{quote.quote}}</p>
+        </div>
+      </div>
+    </div>
+  `
+}
+
 const Quote = {
   props: ['quote', 'modal'],
   data(){
@@ -94,14 +116,22 @@ const app = new Vue({
       filtered: [],
       selectedThemes: [],
       query: "",
+      modalOpen: false,
+      modalQuote: {},
   },
   components: {
-    Sorting, Pagination, Quotes, Search,
+    Sorting, Pagination, Quotes, Search, Modal
   },
   methods: {
-    
     showModal: function(quote){
+      this.modalOpen = true
+      this.modalQuote = quote
       console.log(quote.context)
+    },
+    closeModal: function(){
+      this.modalOpen = false
+      this.modalQuote = {}
+      console.log(this.modalOpen)
     },
     quoteResults: function(quotes, query){
       return quotes.filter(ele => {
