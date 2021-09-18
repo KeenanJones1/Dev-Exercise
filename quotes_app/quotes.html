@@ -4,24 +4,28 @@
 <head>
   <title>Quotes App</title>
   <script src="src/vue.js"></script>
+  <link rel="stylesheet" href="quotes.css">
 </head>
 <body>
   <div id="app">
-    <div class="search">
+
+    <div id="title">
+      {{ placeholder }}
+    </div>
+
+    <div id="search">
       <Search :seek="seek" :submit="onSubmit"/>
     </div>
 
-    {{ placeholder }}
-
-    <div class="filter">
+    <div id="filter">
       <Sorting :themes='themes' :filter='filter'/>
     </div>
 
-    <div class="quote-table">
-      <Quotes :quotes="quotes" :loading='loading' :current='currentQuotes'/>
+    <div id="quotes">
+      <Quotes :quotes="quotes" :loading='loading' :current='currentQuotes' :modal="showModal"/>
     </div>
 
-    <div class="pagination">
+    <div id="pagination">
       <Pagination :pages='pages' :paginate='paginate' :current='currentPage'/>
     </div>
 

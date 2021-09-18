@@ -1,36 +1,37 @@
-//  Filter filtering quotes 
-// table of quotes
-// footer pagination for quot≥÷es
 
 const Quote = {
-  props: ['quote'],
+  props: ['quote', 'modal'],
   data(){
     return {}
   },
   methods: {},
   template: `
-      <tr>
-        <td>{{quote.theme}}</td>
-        <td>{{quote.context}}</td>
-        <td>{{quote.quote}}</td>
-        <td>{{quote.source}}</td>
+      <tr class="quote-row" @click="modal(quote)">
+        <td id="quote-theme">{{quote.theme}}</td>
+        <td id="quote-context">{{quote.context}}</td>
+        <td id="quote-text">{{quote.quote}}</td>
+        <td id="quote-source">{{quote.source}}</td>
       </tr>
   `
 }
 
 
 const Quotes = {
-  props: ['quotes', 'btn', 'loading', 'current'],
+  props: ['quotes', 'btn', 'loading', 'current', 'modal'],
   components: {Quote},
   template: `
-    <table>
-      <tr>
-        <th>Theme</th>
-        <th>Context</th>
-        <th>Quote</th>
-        <th>Source</th>
-      </tr>
-      <Quote v-for="ele in current" :quote='ele'/>
+    <table id="quote-table">
+      <thead>
+        <tr class="table-headers">
+          <th><p>Theme</p></th>
+          <th><p>Title</p></th>
+          <th><p>Quote</p></th>
+          <th><p>Source</p></th>
+        </tr>
+      </thead>
+      <tbody>
+        <Quote v-for="ele in current" :quote='ele' :key="ele.source" :modal="modal"/>
+      </tbody>
     </table>
   `
 }
@@ -42,8 +43,8 @@ const Sorting = {
   },
   methods: {},
   template: `
-    <ul>
-      <li v-for="ele in themes">
+    <ul id="theme-container">
+      <li class="theme" v-for="ele in themes">
         <input type=checkbox @change="filter(ele, $event)">  
           {{ele}}
         </input>
@@ -54,16 +55,10 @@ const Sorting = {
 
 const Pagination = {
   props: ['current', 'paginate', 'pages'],
-  data(){
-    return {
-      pageNums:[]
-    }
-  },
-
   template: `
-    <ul>
+    <ul id="pages">
       <li v-for="page in pages" @click="paginate(page)">
-        <button>{{page}}</button>
+        <button class="page">{{page}}</button>
       </li>
     </ul>
   `
@@ -78,10 +73,9 @@ const Search = {
     }
   },
   template: `
-    <div>
-      <h1>{{query}}</h1>
-      <input v-model="query" @input="seek($event)"/>
-      <button @click="submit">Submit</button>
+    <div class="search-container">
+      <input id="search-bar" v-model="query" @input="seek($event)"/>
+      <button @click="submit" id="submit-btn">Submit</button>
     </div>
   `
 }
@@ -98,138 +92,142 @@ const app = new Vue({
       currentQuotes: [],
       themes:[],
       filtered: [],
-      selectedTheme: [],
+      selectedThemes: [],
       query: "",
   },
   components: {
-    Sorting, Pagination, Quotes, Search
-  },
-  created: async function () {
-    this.loading = true
-    const url = "https://gist.githubusercontent.com/benchprep/dffc3bffa9704626aa8832a3b4de5b27/raw/quotes.json"
-    const response = await fetch(url);
-    const data = await response.json();
-    this.quotes = data;
-    this.loading = false
-    // pagination begin ====================
-    const indexOfLastPost = this.currentPage * this.perPage;
-    const indexOfFirstPost = indexOfLastPost - this.perPage;
-    const currentQuotes = data.slice(indexOfFirstPost, indexOfLastPost)
-    this.currentQuotes = currentQuotes
-    
-    for(let i = 1; i <= Math.ceil(this.quotes.length / this.perPage); i++){
-      this.pages.push(i)
-    }
-    // pagination ends===================
-
-    // filtering begin=====================
-      data.map(ele => {
-        if(!this.themes.includes(ele.theme)){
-          this.themes.push(ele.theme)
-        }
-      })
-    // filtering ends======================
+    Sorting, Pagination, Quotes, Search,
   },
   methods: {
-    //  searching
-    filterQuotes: function(theme){
-      this.selectedTheme = [...this.selectedTheme, theme]
-
-      this.filtered = this.quotes.filter(ele => this.selectedTheme.includes(ele.theme))
-
-      const indexOfLastPost = this.currentPage * this.perPage;
-      const indexOfFirstPost = indexOfLastPost - this.perPage;
-      const currentQuotes = this.filtered.slice(indexOfFirstPost, indexOfLastPost)
-      this.currentQuotes = currentQuotes
-
-      this.pages = []
-      for(let i = 1; i <= Math.ceil(this.filtered.length / this.perPage); i++){
-        this.pages.push(i)
-      }
-      if (this.pages.length < 2) this.pages = []
+    
+    showModal: function(quote){
+      console.log(quote.context)
+    },
+    quoteResults: function(quotes, query){
+      return quotes.filter(ele => {
+        ele.quote.toLowerCase().includes(query.toLowerCase)
+      })
     },
 
-    unFilterQuotes: function(theme) {
-      ele = this.selectedTheme.find(ele => ele == theme)
-      idx = this.selectedTheme.indexOf(ele)
+    updateQuotes: function(quotes, themes){
+      return quotes.filter(ele => {
+        themes.includes(ele.theme)
+      })
+    },
 
-      this.selectedTheme.splice(idx, 1)
-
-      if(this.filtered.length > 1){
-        this.filtered = this.quotes
+    updateThemes:function(themes, theme, checked=true){
+      if(checked){
+        const newThemes = [...themes, theme]
+        return newThemes
       }else{
-        this.filtered = this.quotes.filter(ele => this.selectedTheme.includes(ele.theme))
+        const idx = themes.indexOf(theme)
+        themes.splice(idx, 1)
+        return themes
+      }
+    },
+
+    updateQuotes: function(quotes, themes, checked=true){
+      if(themes.length == 0 && !checked){
+        return quotes
+      }
+      else{
+        const filteredQoutes = quotes.filter(ele => themes.includes(ele.theme))
+        return filteredQoutes
+      }
+    },
+
+    updateShowingQuotes:function(quotes, currentPage, perPage){
+      const indexOfLastPost = currentPage * perPage;
+      const indexOfFirstPost = indexOfLastPost - perPage;
+      return [...quotes].slice(indexOfFirstPost, indexOfLastPost)
+    },
+
+    updatePages:function(currentPage, perPage, quotes){
+      let pages = []
+      const indexOfLastPost = currentPage * perPage
+      const indexOfFirstPost = indexOfLastPost - perPage
+      for(let i = 1; i <= Math.ceil(quotes.length / perPage); i++){
+        pages.push(i)
       }
 
-      const indexOfLastPost = this.currentPage * this.perPage;
-      const indexOfFirstPost = indexOfLastPost - this.perPage;
-      const currentQuotes = this.filtered.slice(indexOfFirstPost, indexOfLastPost)
-      this.currentQuotes = currentQuotes
+      if (pages.length < 2) pages = [1]
 
-      this.pages = []
-      for(let i = 1; i <= Math.ceil(this.filtered.length / this.perPage); i++){
-        this.pages.push(i)
-      }
-      if (this.pages.length < 2) this.pages = []
+      return pages
     },
 
     filter: function(theme, event){
-      if(event.target.checked){
-        this.filterQuotes(theme)
+      this.currentPage = 1
+      const updatedThemes = this.updateThemes(this.selectedThemes, theme, event.target.checked)
+      this.selectedThemes = updatedThemes
+
+      const updatedQuotes  = this.updateQuotes(this.quotes, updatedThemes, event.target.checked)
+
+      const updatedQuotesShowing = this.updateShowingQuotes(updatedQuotes, this.currentPage, this.perPage)
+
+      const updatedPageList = this.updatePages(this.currentPage, this.perPage, updatedQuotes)
+
+      if(updatedPageList.length < 2){
+        this.pages = [1]
       }else{
-        this.unFilterQuotes(theme)
+        this.pages = updatedPageList
       }
+
+      this.currentQuotes = updatedQuotesShowing
+      this.filtered = updatedQuotes
+      this.selectedThemes = updatedThemes
     },
 
     paginate: function(page){
       this.currentPage = page
-      const indexOfLastPost = this.currentPage * this.perPage;
-      const indexOfFirstPost = indexOfLastPost - this.perPage;
       if(this.filtered.length < 1){
-        const currentQuotes = this.quotes.slice(indexOfFirstPost, indexOfLastPost)
-        this.currentQuotes = currentQuotes
+        this.currentQuotes = this.updateShowingQuotes(this.quotes, this.currentPage, this.perPage)
       }else{
-        const currentQuotes = this.filtered.slice(indexOfFirstPost, indexOfLastPost)
-        this.currentQuotes = currentQuotes
+        this.currentQuotes = this.updateShowingQuotes(this.filtered, this.currentPage, this.perPage)
       }
     },
+
     seek: function(e){
       this.query = e.target.value
+      this.onSubmit()
     },
-    onSubmit: function(){
 
-      let check = this.quotes.filter(ele => {
+    onSubmit: function(){
+      let matchingQuotes = this.quotes.filter(ele => {
         return ele.quote.toLowerCase().includes(this.query.toLowerCase())
-      })
+      });
+
+      if(this.filtered.length){
+        matchingQuotes = this.filtered.filter(ele => {
+          return ele.quote.toLowerCase().includes(this.query.toLowerCase())
+        });
+      };
 
       if(this.query == ''){
-        check = this.quotes 
-        const indexOfLastPost = this.currentPage * this.perPage;
-        const indexOfFirstPost = indexOfLastPost - this.perPage;
-        const currentQuotes = check.slice(indexOfFirstPost, indexOfLastPost)
-        this.currentQuotes = currentQuotes
+        this.currentQuotes = this.updateShowingQuotes(this.quotes, this.currentPage, this.perPage)
+        this.pages = this.updatePages(this.currentPage, this.perPage, this.quotes)
 
-        this.pages = []
-        for(let i = 1; i <= Math.ceil(this.quotes.length / this.perPage); i++){
-        this.pages.push(i)
-        }
-
-        if (this.pages.length < 2) this.pages = []
       }else{
-              const indexOfLastPost = this.currentPage * this.perPage;
-              const indexOfFirstPost = indexOfLastPost - this.perPage;
-              const currentQuotes = check.slice(indexOfFirstPost, indexOfLastPost)
-              this.currentQuotes = currentQuotes
-        
-              this.pages = []
-              for(let i = 1; i <= Math.ceil(this.filtered.length / this.perPage); i++){
-                this.pages.push(i)
-              }
-              if (this.pages.length < 2) this.pages = []
+        this.currentQuotes = this.updateShowingQuotes(matchingQuotes, this.currentPage, this.perPage)
+        this.pages = this.updatePages(this.currentPage, this.perPage, matchingQuotes)
       }
     },
+},
 
+  created: async function () {
+    this.loading = true;
+    const url = "https://gist.githubusercontent.com/benchprep/dffc3bffa9704626aa8832a3b4de5b27/raw/quotes.json";
+    const response = await fetch(url);
+    const data = await response.json();
+    this.quotes = data;
+    this.currentQuotes = this.updateShowingQuotes(this.quotes, this.currentPage, this.perPage);
+    this.pages = this.updatePages(this.currentPage, this.perPage, this.quotes);
 
+    data.map(ele => {
+      if(!this.themes.includes(ele.theme)){
+        this.themes.push(ele.theme)
+      }
+    });
 
+    this.loading = false;
   },
 })

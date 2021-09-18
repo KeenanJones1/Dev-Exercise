@@ -1,0 +1,192 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+:root {
+  --background-color: #262625;
+  --primary-color: #2f591c;
+  --secondary-color: #adbf1f;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--background-color);
+  color: white;
+}
+
+#title {
+  width: 90%;
+  height: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin: 0 0 0.1em 0;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+/* search section begins */
+#search {
+  width: 90%;
+  height: 9%;
+  margin: 1em;
+}
+
+.search-container {
+  display: flex;
+  flex-direction: column;
+  height: 90%;
+}
+
+#search-bar {
+  background-color: var(--secondary-color);
+  width: 80%;
+  height: 70%;
+  color: white;
+  font-size: 2em;
+  align-self: center;
+  border: none;
+  border-radius: 30px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#search-bar:focus {
+  outline: none;
+  box-shadow: 0px 0px 2px var(--primary-color);
+}
+
+#submit-btn {
+  width: 12%;
+  cursor: pointer;
+  align-self: center;
+  height: 100%;
+  font-size: 90%;
+  margin: 0.4em 0 0 0.5em;
+  border-radius: 12px;
+}
+
+#submit-btn:hover {
+  background-color: var(--primary-color);
+  transition: ease-in 0.5s;
+  color: white;
+  border: none;
+}
+
+/* Search section end */
+#theme-container {
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  width: 90%;
+  align-items: center;
+  justify-content: space-evenly;
+  margin: 0;
+}
+
+.theme {
+  font-size: 1.5rem;
+}
+
+#filter {
+  background-color: var(--primary-color);
+  width: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+/* pages and pagination begins */
+#pagination {
+  background-color: var(--primary-color);
+  width: 90%;
+  margin: 0;
+  margin-bottom: 1rem;
+}
+
+#pages {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  list-style: none;
+}
+
+.page {
+  border: none;
+  background-color: inherit;
+  font-size: 1.5em;
+  color: white;
+  display: flex;
+  justify-content: space-around;
+  cursor: pointer;
+  font-size: 2rem;
+}
+
+/* pages and pagination ends */
+
+/* quotes and quote table begin */
+#quotes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+#quote-table {
+  width: 90%;
+  height: 100%;
+  table-layout: fixed;
+}
+
+td {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+th {
+  padding-left: 2em;
+  padding-right: 2em;
+}
+
+tr {
+  height: 2px;
+  overflow: hidden;
+}
+
+tbody > tr {
+  cursor: pointer;
+}
+tbody > tr:hover {
+  background-color: red;
+  color: white;
+}
+
+.quote-row {
+  width: 100%;
+}
+
+.quote-row > td {
+  font-size: 0.9em;
+  padding: 0 1em 0 1em;
+}
+
+tr:nth-of-type(odd) {
+  background: #eee;
+  color: black;
+  border-top: 5px solid gold;
+}
+
+tr:nth-of-type(even) {
+  background: var(--secondary-color);
+  color: white;
+  border-top: 5px solid gold;
+}
+/* quotes and quote table begin */
