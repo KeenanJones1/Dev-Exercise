@@ -58,7 +58,7 @@ const Quotes = {
   `
 }
 
-const Sorting = {
+const Filtering = {
   props: ['themes', 'filter'],
   data(){
     return {}
@@ -120,28 +120,22 @@ const app = new Vue({
       modalQuote: {},
   },
   components: {
-    Sorting, Pagination, Quotes, Search, Modal
+    Filtering, Pagination, Quotes, Search, Modal
   },
   methods: {
     showModal: function(quote){
       this.modalOpen = true
       this.modalQuote = quote
-      console.log(quote.context)
     },
+
     closeModal: function(){
       this.modalOpen = false
       this.modalQuote = {}
-      console.log(this.modalOpen)
     },
+
     quoteResults: function(quotes, query){
       return quotes.filter(ele => {
         ele.quote.toLowerCase().includes(query.toLowerCase)
-      })
-    },
-
-    updateQuotes: function(quotes, themes){
-      return quotes.filter(ele => {
-        themes.includes(ele.theme)
       })
     },
 
