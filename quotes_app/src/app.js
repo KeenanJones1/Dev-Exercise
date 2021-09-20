@@ -23,13 +23,9 @@ const Modal = {
 
 const Quote = {
   props: ['quote', 'modal'],
-  data(){
-    return {}
-  },
-  methods: {},
   template: `
       <tr class="quote-row" @click="modal(quote)">
-        <td id="quote-theme">{{quote.theme}}</td>
+        <td class="quote" id="quote-theme">{{quote.theme}}</td>
         <td id="quote-context">{{quote.context}}</td>
         <td id="quote-text">{{quote.quote}}</td>
         <td id="quote-source">{{quote.source}}</td>
@@ -60,10 +56,6 @@ const Quotes = {
 
 const Filtering = {
   props: ['themes', 'filter'],
-  data(){
-    return {}
-  },
-  methods: {},
   template: `
     <ul id="theme-container">
       <li class="theme" v-for="ele in themes">
@@ -80,7 +72,7 @@ const Pagination = {
   template: `
     <ul id="pages">
       <li v-for="page in pages" @click="paginate(page)">
-        <button class="page">{{page}}</button>
+        <button v-bind:class="{active: current == page ? true : false}" id="page">{{page}}</button>
       </li>
     </ul>
   `
@@ -166,16 +158,13 @@ const app = new Vue({
       return [...quotes].slice(indexOfFirstPost, indexOfLastPost)
     },
 
-    updatePages:function(currentPage, perPage, quotes){
+    updatePages:function(perPage, quotes){
       let pages = []
-      const indexOfLastPost = currentPage * perPage
-      const indexOfFirstPost = indexOfLastPost - perPage
       for(let i = 1; i <= Math.ceil(quotes.length / perPage); i++){
         pages.push(i)
       }
 
       if (pages.length < 2) pages = [1]
-
       return pages
     },
 
@@ -183,12 +172,9 @@ const app = new Vue({
       this.currentPage = 1
       const updatedThemes = this.updateThemes(this.selectedThemes, theme, event.target.checked)
       this.selectedThemes = updatedThemes
-
       const updatedQuotes  = this.updateQuotes(this.quotes, updatedThemes, event.target.checked)
-
       const updatedQuotesShowing = this.updateShowingQuotes(updatedQuotes, this.currentPage, this.perPage)
-
-      const updatedPageList = this.updatePages(this.currentPage, this.perPage, updatedQuotes)
+      const updatedPageList = this.updatePages(this.perPage, updatedQuotes)
 
       if(updatedPageList.length < 2){
         this.pages = [1]
@@ -228,23 +214,30 @@ const app = new Vue({
 
       if(this.query == ''){
         this.currentQuotes = this.updateShowingQuotes(this.quotes, this.currentPage, this.perPage)
-        this.pages = this.updatePages(this.currentPage, this.perPage, this.quotes)
-
+        this.pages = this.updatePages(this.perPage, this.quotes)
       }else{
         this.currentQuotes = this.updateShowingQuotes(matchingQuotes, this.currentPage, this.perPage)
-        this.pages = this.updatePages(this.currentPage, this.perPage, matchingQuotes)
+        this.pages = this.updatePages(this.perPage, matchingQuotes)
       }
     },
 },
 
   created: async function () {
     this.loading = true;
-    const url = "https://gist.githubusercontent.com/benchprep/dffc3bffa9704626aa8832a3b4de5b27/raw/quotes.json";
-    const response = await fetch(url);
-    const data = await response.json();
+    let url, response, data
+    try{
+       url = "https://gist.githubusercontent.com/benchprep/dffc3bffa9704626aa8832a3b4de5b27/raw/quotes.json";
+       response = await fetch(url);
+       data = await response.json();
+    }
+    catch(err){
+      console.log(err)
+    }
+
     this.quotes = data;
     this.currentQuotes = this.updateShowingQuotes(this.quotes, this.currentPage, this.perPage);
-    this.pages = this.updatePages(this.currentPage, this.perPage, this.quotes);
+    this.pages = this.updatePages(this.perPage, this.quotes);
+
 
     data.map(ele => {
       if(!this.themes.includes(ele.theme)){
