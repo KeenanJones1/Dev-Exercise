@@ -1,6 +1,10 @@
 
 const Modal = {
-  props: ['open', 'quote', 'close'],
+  props: {
+    open: Boolean,
+    quote: Object,
+    close: Function,
+  },
   template: `
     <div v-if="open" class="overlay">
       <div class="exit-btn">
@@ -22,7 +26,10 @@ const Modal = {
 }
 
 const Quote = {
-  props: ['quote', 'modal'],
+  props: {
+    quote: Object,
+    modal: Function 
+  },
   template: `
       <tr class="quote-row" @click="modal(quote)">
         <td class="quote" id="quote-theme">{{quote.theme}}</td>
@@ -35,7 +42,12 @@ const Quote = {
 
 
 const Quotes = {
-  props: ['quotes', 'btn', 'loading', 'current', 'modal'],
+  props: {
+    quotes: Array,
+    loading: Boolean,
+    current: Array,
+    modal: Boolean
+  },
   components: {Quote},
   template: `
     <table id="quote-table">
@@ -55,7 +67,10 @@ const Quotes = {
 }
 
 const Filtering = {
-  props: ['themes', 'filter'],
+  props: {
+    themes: Array,
+    filter: Function
+  },
   template: `
     <ul id="theme-container">
       <li class="theme" v-for="ele in themes">
@@ -68,7 +83,11 @@ const Filtering = {
 }
 
 const Pagination = {
-  props: ['current', 'paginate', 'pages'],
+  props: {
+    paginate: Function,
+    current: Number,
+    pages: Array
+  },
   template: `
     <ul id="pages">
       <li v-for="page in pages" @click="paginate(page)">
@@ -80,7 +99,10 @@ const Pagination = {
 
 
 const Search = {
-  props: ['seek', 'submit'],
+  props: {
+    seek: Function,
+    submit: Function
+  },
   data:function(){
     return{
       query: ""
